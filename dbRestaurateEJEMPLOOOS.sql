@@ -144,51 +144,58 @@
 
 --MERGE ---------------------------------------------------------------------------------------------------------------------------------------------
 
-
-        
--- Creación de la tabla de origen (tablaTemporal_1)
+-- Crear tabla origen: tablaTemporal_1
 CREATE TABLE tablaTemporal_1 (
     id NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     nombre VARCHAR2(50),
-    dni CHAR(8)
+    dni CHAR(8),
+    tipo CHAR(1)
 );
 
--- Creación de la tabla destino (tablaTemporal_2)
+-- Crear tabla destino: tablaTemporal_2
 CREATE TABLE tablaTemporal_2 (
     id NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    nombre VARCHAR2(50),    
-    dni CHAR(8)
+    nombre VARCHAR2(50),
+    dni CHAR(8),
+    tipo CHAR(1)
 );
 
+-- Insertar datos en tablaTemporal_1------------------------
+INSERT INTO tablaTemporal_1 ( nombre, dni, tipo)VALUES ( 'Juan', '12345678', 'A');
+INSERT INTO tablaTemporal_1 ( nombre, dni, tipo)VALUES ( 'María', '87654321', 'A');
+INSERT INTO tablaTemporal_1 ( nombre, dni, tipo)VALUES ( 'Pedro', '98765432', 'A');
+INSERT INTO tablaTemporal_1 ( nombre, dni, tipo)VALUES ( 'Rosa', '44441111', 'A');
+INSERT INTO tablaTemporal_1 ( nombre, dni, tipo)VALUES ( 'Mario', '44442222', 'A');
 
--- Inserción de datos en la tablaTemporal_1
-INSERT INTO tablaTemporal_1 (nombre, dni)
-VALUES ('Juan', '12345678');
+-- Insertar datos en tablaTemporal_2------------------------
+INSERT INTO tablaTemporal_2 ( nombre, dni, tipo)VALUES ( 'Ana', '11111111', 'B');
+INSERT INTO tablaTemporal_2 ( nombre, dni, tipo)VALUES ( 'Luis', '22222222', 'B');
+INSERT INTO tablaTemporal_2 ( nombre, dni, tipo)VALUES ( 'Laura', '33333333', 'B');
 
-INSERT INTO tablaTemporal_1 (nombre, dni)
-VALUES ('María', '87654321');
-
-
-
--- Inserción de datos iniciales en la tablaTemporal_2
-INSERT INTO tablaTemporal_2 (id, nombre, dni)
-VALUES (1, 'Carlos', '87654321');
-
-INSERT INTO tablaTemporal_2 (id, nombre, dni)
-VALUES (3, 'Laura', '23456789');
-
--- Ejemplo de MERGE entre tablaTemporal_1 y tablaTemporal_2
-MERGE INTO tablaTemporal_2 dest
-USING tablaTemporal_1 src
-ON (dest.id = src.id)
+-- Realizar la operación MERGE
+MERGE INTO tablaTemporal_2 t2
+USING tablaTemporal_1 t1
+ON (t2.id = t1.id)
 WHEN MATCHED THEN
-    UPDATE SET dest.nombre = src.nombre, dest.dni = src.dni
+    UPDATE SET 
+               t2.dni = t1.dni,
+               t2.tipo = t1.tipo
 WHEN NOT MATCHED THEN
-    INSERT (id, nombre, dni)
-    VALUES (src.id, src.nombre, src.dni);
+    INSERT ( nombre, dni, tipo)
+    VALUES ( 'Otros', '00000000','C');
 
--- Consulta de los datos actualizados en la tablaTemporal_2
-SELECT * FROM tablaTemporal_2;
+
+select * from tablaTemporal_1;
+select * from tablaTemporal_2 ;
+
+drop table tablaTemporal_1 ;
+drop table tablaTemporal_2;
+
+
+
+
+
+
 
 
 
