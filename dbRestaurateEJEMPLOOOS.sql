@@ -24,7 +24,7 @@
     --Multiple-row subquery--
     
     --Ejemplo 1: Obtener los nombres de los empleados que han realizado compras. //JOSE, JUAN, PABLO, RONALD y MIRIA
-    SELECT nombre
+    SELECT nombre, apellidos
     FROM EMPLEADO
     WHERE id_empleado IN (SELECT id_empleado FROM COMPRA);
     
@@ -32,6 +32,7 @@
     SELECT nombre, apellidos
     FROM empleado
     WHERE id_empleado NOT IN (SELECT id_empleado FROM compra);
+    
     
     --Ejemplo 3: Obtener nombre y apellidos de los empleados cuyo ID coincide con algunos proveedores en la tabla COMPRA.
     SELECT nombre, apellidos
@@ -132,69 +133,65 @@
     
     --Valores default
     
-    --Para este ejemplo ya existe un valor por defecto es estado el cual es "A"
-    --Es por ello que voy a hacer un 
-    ALTER TABLE EMPLEADO MODIFY estado CHAR(1) DEFAULT 'U' ;
+    --Para este ejemplo ya existe un valor por defecto es estado el cual es "A": tipo CHAR(1) DEFAULT 'A'
     
-    UPDATE EMPLEADO SET estado = 'I' WHERE estado = 'A';
+    -- Crear tabla origen: tablaTemporal_1
+    CREATE TABLE tablaTemporal_1 (
+        id NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+        nombre VARCHAR2(50),
+        dni CHAR(8),
+        tipo CHAR(1) DEFAULT 'A'
+    );
     
-    SELECT * FROM EMPLEADO;
+    -- Crear tabla destino: tablaTemporal_2
+    CREATE TABLE tablaTemporal_2 (
+        id NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+        nombre VARCHAR2(50),
+        dni CHAR(8),
+        tipo CHAR(1) DEFAULT 'B'
+    );
+
     
-    ALTER TABLE EMPLEADO MODIFY estado CHAR(1) DEFAULT 'A' ;
+    -- Insertar datos en tablaTemporal_1------------------------
+    INSERT INTO tablaTemporal_1 ( nombre, dni)VALUES ( 'Juan', '12345678');
+    INSERT INTO tablaTemporal_1 ( nombre, dni)VALUES ( 'María', '87654321');
+    INSERT INTO tablaTemporal_1 ( nombre, dni)VALUES ( 'Pedro', '98765432');
+    INSERT INTO tablaTemporal_1 ( nombre, dni)VALUES ( 'Rosa', '44441111');
+    INSERT INTO tablaTemporal_1 ( nombre, dni)VALUES ( 'Mario', '44442222');
+    
+    -- Insertar datos en tablaTemporal_2------------------------
+    INSERT INTO tablaTemporal_2 ( nombre, dni)VALUES ( 'Ana', '11111111');
+    INSERT INTO tablaTemporal_2 ( nombre, dni)VALUES ( 'Luis', '22222222');
+    INSERT INTO tablaTemporal_2 ( nombre, dni)VALUES ( 'Laura', '33333333');
+    
+    --Listar tablas
+    select * from tablaTemporal_1;--tabla ORIGEN
+    select * from tablaTemporal_2 ;--tabla DESTINO
 
 --MERGE ---------------------------------------------------------------------------------------------------------------------------------------------
 
--- Crear tabla origen: tablaTemporal_1
-CREATE TABLE tablaTemporal_1 (
-    id NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    nombre VARCHAR2(50),
-    dni CHAR(8),
-    tipo CHAR(1)
-);
-
--- Crear tabla destino: tablaTemporal_2
-CREATE TABLE tablaTemporal_2 (
-    id NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    nombre VARCHAR2(50),
-    dni CHAR(8),
-    tipo CHAR(1)
-);
-
--- Insertar datos en tablaTemporal_1------------------------
-INSERT INTO tablaTemporal_1 ( nombre, dni, tipo)VALUES ( 'Juan', '12345678', 'A');
-INSERT INTO tablaTemporal_1 ( nombre, dni, tipo)VALUES ( 'María', '87654321', 'A');
-INSERT INTO tablaTemporal_1 ( nombre, dni, tipo)VALUES ( 'Pedro', '98765432', 'A');
-INSERT INTO tablaTemporal_1 ( nombre, dni, tipo)VALUES ( 'Rosa', '44441111', 'A');
-INSERT INTO tablaTemporal_1 ( nombre, dni, tipo)VALUES ( 'Mario', '44442222', 'A');
-
--- Insertar datos en tablaTemporal_2------------------------
-INSERT INTO tablaTemporal_2 ( nombre, dni, tipo)VALUES ( 'Ana', '11111111', 'B');
-INSERT INTO tablaTemporal_2 ( nombre, dni, tipo)VALUES ( 'Luis', '22222222', 'B');
-INSERT INTO tablaTemporal_2 ( nombre, dni, tipo)VALUES ( 'Laura', '33333333', 'B');
-
--- Realizar la operación MERGE
-MERGE INTO tablaTemporal_2 t2
-USING tablaTemporal_1 t1
-ON (t2.id = t1.id)
-WHEN MATCHED THEN
-    UPDATE SET 
-               t2.dni = t1.dni,
-               t2.tipo = t1.tipo
-WHEN NOT MATCHED THEN
-    INSERT ( nombre, dni, tipo)
-    VALUES ( 'Otros', '00000000','C');
-
-
-select * from tablaTemporal_1;
-select * from tablaTemporal_2 ;
-
-drop table tablaTemporal_1 ;
-drop table tablaTemporal_2;
-
-
-
-
-
+    --Tabla que va a cambiar
+    select * from tablaTemporal_2 ;--tabla DESTINO
+    
+    -- Realizar el MERGE, sabiendo que tabla ORIGEN: tablaTemporal_1 Y tabla DESTINO: tablaTemporal_2
+    MERGE INTO tablaTemporal_2 t2 --Destino
+    USING tablaTemporal_1 t1    --Origen
+    ON (t2.id = t1.id)  --Busca coincidencia
+    WHEN MATCHED THEN
+        UPDATE SET 
+         t2.dni = t1.dni,
+         t2.tipo = t1.tipo
+    WHEN NOT MATCHED THEN
+        INSERT ( nombre, dni, tipo)
+        VALUES ( 'Otros', '00000000','C');
+    
+    --Listar tablas
+    select * from tablaTemporal_1;--tabla ORIGEN
+    select * from tablaTemporal_2 ;--tabla DESTINO
+    
+    --Eliminar tablas
+    drop table tablaTemporal_1 ;
+    drop table tablaTemporal_2;
 
 
 
@@ -208,8 +205,9 @@ INSERT ALL
     INTO CLIENTE (NOMBRE, APELLIDO_PATERNO, APELLIDO_MATERNO, EMAIL, DNI, CELULAR, DIRECCION, CODIGO_UBIGEO) VALUES ('Isaac', 'Quispe', 'Perez', 'isaaquis@gmail.com', '00000001', '956745726', 'URB.SANTA ROSALIA', '140403')
 SELECT * FROM dual;
 
---Extras
+--Listar los nuevos datos
 SELECT * FROM CLIENTE WHERE DNI IN ('00000003', '00000002', '00000001');
 
+--Eliminar los nuevos datos
 DELETE FROM CLIENTE WHERE DNI IN ('00000003', '00000002', '00000001');
 
