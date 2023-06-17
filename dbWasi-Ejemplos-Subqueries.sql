@@ -8,7 +8,7 @@
     FROM EMPLEADO
     WHERE id_empleado = (SELECT id_empleado FROM COMPRA WHERE id_compra = 1);
     
-    --Ejemplo 2: Obtener el nombre del EMPLEADO que realizó una COMPRA y su estado sea 'A' (activo) en la tabla EMPLEADO.  //TABLA PRINCIPAL=EMPLEADO, TABLA SECUNDARIA=COMPRA
+    --Ejemplo 2: Obtener el nombre del EMPLEADO que realizÃ³ una COMPRA y su estado sea 'A' (activo) en la tabla EMPLEADO.  //TABLA PRINCIPAL=EMPLEADO, TABLA SECUNDARIA=COMPRA
     SELECT nombre, estado
     FROM EMPLEADO
     WHERE id_empleado = (SELECT id_empleado FROM COMPRA WHERE id_compra = 3
@@ -93,7 +93,7 @@
     LEFT JOIN COMPRA C ON E.id_empleado = C.id_empleado;
     
     
-    /*Problema 4: Obtener el número total de compras realizadas por cada empleado.
+    /*Problema 4: Obtener el nÃºmero total de compras realizadas por cada empleado.
     DIFERENCIA 1: La primera consulta trae todas las compras realizadas por empleado, incluso si los empleados no hicieron compras y eso esta mal
     DIFERENCIA OPTIMIZACION: EMPLEADO.nombre ---> E.nombre */
     
@@ -154,7 +154,7 @@
     
     -- Insertar datos en tablaTemporal_1------------------------
     INSERT INTO tablaTemporal_1 ( nombre, dni)VALUES ( 'Juan', '12345678');
-    INSERT INTO tablaTemporal_1 ( nombre, dni)VALUES ( 'María', '87654321');
+    INSERT INTO tablaTemporal_1 ( nombre, dni)VALUES ( 'MarÃ­a', '87654321');
     INSERT INTO tablaTemporal_1 ( nombre, dni)VALUES ( 'Pedro', '98765432');
     INSERT INTO tablaTemporal_1 ( nombre, dni)VALUES ( 'Rosa', '44441111');
     INSERT INTO tablaTemporal_1 ( nombre, dni)VALUES ( 'Mario', '44442222');
