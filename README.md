@@ -1,2 +1,2 @@
-# EJEMPLOS-Programacion-con-Oracle-SQL
+# EJEMPLOS-Programacion-Oracle-SQL
 EJEMPLOS
