@@ -3,7 +3,7 @@ SET SERVEROUTPUT ON;
 
 
 --------------------------------------------------------------------------------
-------------------Uso de atributos de cursor explÌcitos-------------------------
+------------------Uso de atributos de cursor expl√≠citos-------------------------
 --------------------------------------------------------------------------------
 
 -- Ejemplo 1: Verificar si existen insumos disponibles
@@ -25,10 +25,10 @@ END;
 
 
 
--- Ejemplo 2: Obtener el estado de un insumo especÌfico utilizando el atributo %FOUND del cursor
+-- Ejemplo 2: Obtener el estado de un insumo espec√≠fico utilizando el atributo %FOUND del cursor
 DECLARE
   CURSOR c_insumo IS
-    SELECT estado FROM insumo WHERE id_insumo = 6; -- Cambiar el id seg˙n el insumo deseado
+    SELECT estado FROM insumo WHERE id_insumo = 6; -- Cambiar el id seg√∫n el insumo deseado
   v_estado insumo.estado%TYPE; -- Declarar una variable para almacenar el estado del insumo
 BEGIN
   OPEN c_insumo; -- Abrir el cursor
@@ -37,30 +37,30 @@ BEGIN
       IF c_insumo%FOUND THEN -- Verificar si el cursor tiene filas**
         DBMS_OUTPUT.PUT_LINE('El estado del insumo es: ' || v_estado); -- Mostrar el estado del insumo
       ELSE
-        DBMS_OUTPUT.PUT_LINE('No se encontrÛ el insumo'); -- Mostrar mensaje indicando que el insumo no fue encontrado
+        DBMS_OUTPUT.PUT_LINE('No se encontr√≥ el insumo'); -- Mostrar mensaje indicando que el insumo no fue encontrado
       END IF;
   CLOSE c_insumo; -- Cerrar el cursor
 END;
 
 
 
--- Ejemplo 3: Verificar si el cursor est· abierto y contiene filas
+-- Ejemplo 3: Verificar si el cursor est√° abierto y contiene filas
 DECLARE
   CURSOR c_empleados IS SELECT * FROM empleado; -- Declarar el cursor para seleccionar todos los empleados
 BEGIN
   OPEN c_empleados; -- Abrir el cursor
-      IF c_empleados%ISOPEN THEN -- Verificar si el cursor est· abierto**
-        DBMS_OUTPUT.PUT_LINE('El cursor est· abierto'); -- Mostrar mensaje indicando que el cursor est· abierto
+      IF c_empleados%ISOPEN THEN -- Verificar si el cursor est√° abierto**
+        DBMS_OUTPUT.PUT_LINE('El cursor est√° abierto'); -- Mostrar mensaje indicando que el cursor est√° abierto
       ELSE
-        DBMS_OUTPUT.PUT_LINE('El cursor est· cerrado'); -- Mostrar mensaje indicando que el cursor est· cerrado
+        DBMS_OUTPUT.PUT_LINE('El cursor est√° cerrado'); -- Mostrar mensaje indicando que el cursor est√° cerrado
       END IF;
   CLOSE c_empleados; -- Cerrar el cursor
 END;
 
 
--- Ejemplo 4: Actualizar el estado de los insumos con precios mayores a 40.00 y mostrar el n˙mero de registros actualizados:
+-- Ejemplo 4: Actualizar el estado de los insumos con precios mayores a 40.00 y mostrar el n√∫mero de registros actualizados con uso de cursor
 
---Para empezar, se agregan 5 nuevos datos a la tabla Insumo con precios mayores a 40.00
+--4.1: Para empezar, se agregan 5 nuevos datos a la tabla Insumo con precios mayores a 40.00
 INSERT INTO insumo (nombre, stock, unidad_medida, precio)
 SELECT 'Insumo 1', 10, 'kg', 50.00 FROM DUAL UNION ALL
 SELECT 'Insumo 2', 5, 'lts', 55.00 FROM DUAL UNION ALL
@@ -68,55 +68,56 @@ SELECT 'Insumo 3', 8, 'und', 60.00 FROM DUAL UNION ALL
 SELECT 'Insumo 4', 12, 'kg', 45.00 FROM DUAL UNION ALL
 SELECT 'Insumo 5', 3, 'lts', 70.00 FROM DUAL;
 
---Ejecutar el ejemplo--------------
-SELECT constraint_name, column_name
-FROM all_constraints
-WHERE table_name = 'INSUMO' AND constraint_type = 'U';
+--4.2: Ejecutar el ejemplo
 DECLARE
-  v_num_actualizados INTEGER; -- Variable para almacenar el n˙mero de registros actualizados
+  v_num_actualizados INTEGER; -- Variable para almacenar el n√∫mero de registros actualizados
 BEGIN
-  UPDATE insumo SET estado = 'I' WHERE precio > 40.00; -- 1er ejemplo: cambiar el estado a 'I'
-  --DELETE insumo WHERE precio > 40.00; -- 2do ejemplo: eliminar los insumos
+  UPDATE insumo SET estado = 'A' WHERE precio > 40.00; -- 1er ejemplo: cambiar el estado a 'I'
+  --DELETE insumo WHERE precio > 40.00;                -- 2do ejemplo: eliminar los insumos
   
-  v_num_actualizados := SQL%ROWCOUNT; -- Obtener el n˙mero de registros actualizados utilizando el atributo %ROWCOUNT **
+  v_num_actualizados := SQL%ROWCOUNT; -- Obtener el n√∫mero de registros actualizados utilizando el atributo %ROWCOUNT **
   IF v_num_actualizados > 0 THEN
-    DBMS_OUTPUT.PUT_LINE('N˙mero de insumos actualizados: ' || v_num_actualizados);
+    DBMS_OUTPUT.PUT_LINE('N√∫mero de insumos actualizados: ' || v_num_actualizados);
   ELSE
     DBMS_OUTPUT.PUT_LINE('No se encontraron insumos para actualizar');
   END IF;
 END;
 
-select * from insumo where id_insumo >14;
-delete  from insumo where id_insumo >14;
+select * from insumo where precio > 40.00;
+delete  from insumo where precio > 40.00;
 
 --------------------------------------------------------------------------------
 ------------------Bucles FOR del cursor-----------------------------------------
 --------------------------------------------------------------------------------
 
---Ejemplo 1: Verificar si existen insumos disponibles
+--Ejemplo 1: Verificar si existen insumos disponibles y mostrar la cantidad
 DECLARE
-  v_num_insumos INTEGER := 0;--se inicializa con el valor 0, de lo contrario 
+  v_num_insumos INTEGER := 0; -- se inicializa con el valor 0, de lo contrario
 BEGIN
   FOR rec_insumo IN (SELECT * FROM insumo WHERE stock > 0) LOOP
-    v_num_insumos := v_num_insumos + 1;
+    v_num_insumos := v_num_insumos + 1; -- Incrementa el contador de insumos disponibles
   END LOOP;
   IF v_num_insumos > 0 THEN
     DBMS_OUTPUT.PUT_LINE('Existen insumos disponibles.');
   ELSE
     DBMS_OUTPUT.PUT_LINE('No hay insumos disponibles.');
   END IF;
+  DBMS_OUTPUT.PUT_LINE('Cantidad de insumos: ' || v_num_insumos);
 END;
 
 
 
---Ejemplo 2: Recorrer y mostrar los nombres de todos los empleados
+--Ejemplo 2: Recorrer y mostrar los nombres de todos los empleados Y mostrar la cantidad de empleados
 DECLARE
-  v_nombre_empleado VARCHAR2(50); -- Variable para almacenar el nombre de cada empleado
+v_nombre_empleado VARCHAR2(50); -- Variable para almacenar el nombre de cada empleado
+v_contador_empleados INTEGER := 0; -- Contador de empleados
 BEGIN
-  FOR rec_empleado IN (SELECT nombre FROM empleado) LOOP -- Bucle FOR que recorre el cursor de empleados
+    FOR rec_empleado IN (SELECT nombre FROM empleado) LOOP -- Bucle FOR que recorre el cursor de empleados
     v_nombre_empleado := rec_empleado.nombre; -- Asignar el nombre del empleado actual a la variable
+    v_contador_empleados := v_contador_empleados + 1; -- Incrementar el contador de empleados
     DBMS_OUTPUT.PUT_LINE('Nombre de empleado: ' || v_nombre_empleado); -- Mostrar el nombre del empleado
-  END LOOP;
+    END LOOP;
+DBMS_OUTPUT.PUT_LINE('Cantidad de empleados: ' || v_contador_empleados); -- Mostrar la cantidad de empleados
 END;
 
 
@@ -138,41 +139,86 @@ END;
 ------------------Cursors with Parameters---------------------------------------
 --------------------------------------------------------------------------------
 
+--Ejemplo 1: Cursor con parametro para buscar empleados por su ID
 DECLARE
-  CURSOR c_ventas_cliente (p_id_cliente NUMBER) IS
-    SELECT * FROM venta WHERE id_cliente = p_id_cliente;
-  v_venta venta%ROWTYPE;
+  CURSOR c_empleado_id (p_id_empleado INTEGER) IS
+    SELECT * FROM empleado WHERE id_empleado = p_id_empleado;
+      v_empleado empleado%ROWTYPE;
+      v_id_empleado INTEGER := 1; -- ID del empleado a buscar
 BEGIN
-  OPEN c_ventas_cliente(1);
-  LOOP
-    FETCH c_ventas_cliente INTO v_venta;
-    EXIT WHEN c_ventas_cliente%NOTFOUND;
-    -- Realizar operaciones con los datos de la venta
-    -- ...
-  END LOOP;
-  CLOSE c_ventas_cliente;
+  OPEN c_empleado_id(v_id_empleado);
+  FETCH c_empleado_id INTO v_empleado;
+  CLOSE c_empleado_id;
+  DBMS_OUTPUT.PUT_LINE('Empleado encontrado: ' || v_empleado.nombre);
+EXCEPTION
+  WHEN NO_DATA_FOUND THEN
+    DBMS_OUTPUT.PUT_LINE('No se encontr√≥ el empleado con ID: ' || v_id_empleado);
 END;
 
 
+--Ejemplo 2: Cursor con parametro para listar proveedores por estado
 DECLARE
-  CURSOR c_empleados(p_tipo IN VARCHAR2) IS -- Cursor con par·metro p_tipo
-    SELECT * FROM empleado WHERE tipo = p_tipo;
-  v_empleado empleado%ROWTYPE;
+  CURSOR c_proveedor_estado (p_estado CHAR) IS
+    SELECT * FROM proveedor WHERE estado = p_estado;
+  v_proveedor proveedor%ROWTYPE;
+  v_estado CHAR := 'A'; -- Estado de los proveedores a buscar
 BEGIN
-  OPEN c_empleados('A'); -- Uso del cursor con par·metro
+  OPEN c_proveedor_estado(v_estado);
   LOOP
-    FETCH c_empleados INTO v_empleado;
-    EXIT WHEN c_empleados%NOTFOUND;
-    -- Realizar operaciones con el empleado
+    FETCH c_proveedor_estado INTO v_proveedor;
+    EXIT WHEN c_proveedor_estado%NOTFOUND;
+    DBMS_OUTPUT.PUT_LINE('Proveedor encontrado: ' || v_proveedor.razon_social);
   END LOOP;
-  CLOSE c_empleados;
+  CLOSE c_proveedor_estado;
 END;
+
 
 
 
 --------------------------------------------------------------------------------
 ------------------Cursors For Update-------------------------------------------
 --------------------------------------------------------------------------------
+--Ejemplo 1: Actualizar el estado de todos los empleados a 'I' de inactivo, utilizando un cursor FOR UPDATE
+select * from empleado;
+DECLARE
+  CURSOR c_empleados IS
+    SELECT *
+    FROM empleado
+    FOR UPDATE;
+BEGIN
+  FOR emp IN c_empleados LOOP
+    UPDATE empleado
+    SET estado = 'I'
+    WHERE CURRENT OF c_empleados;
+  END LOOP;
+  
+  COMMIT;
+END;
+/
+select * from empleado;
+
+
+--Ejemplo 2: Incrementar en un 10% el precio de todos los insumos utilizando un cursor FOR UPDATE
+
+-- Obtener el precio antes de la actualizaci√≥n
+SELECT id_insumo, precio AS precio_antes FROM insumo;
+DECLARE
+  CURSOR c_insumos IS
+    SELECT *
+    FROM insumo
+    FOR UPDATE;
+BEGIN
+  FOR ins IN c_insumos LOOP
+    UPDATE insumo
+    SET precio = precio * 1.1
+    WHERE CURRENT OF c_insumos;
+  END LOOP;
+  
+  COMMIT;
+END;
+/
+-- Obtener el precio despu√©s de la actualizaci√≥n
+SELECT id_insumo, precio AS precio_despues FROM insumo;
 
 
 
@@ -212,21 +258,17 @@ BEGIN
   LOOP
     FETCH cur_empleados INTO v_id_empleado, v_nombre, v_apellidos, v_dni;
     EXIT WHEN cur_empleados%NOTFOUND;
-
     -- Mostrar los datos del empleado
     DBMS_OUTPUT.PUT_LINE('ID: ' || v_id_empleado);
     DBMS_OUTPUT.PUT_LINE('Nombre: ' || v_nombre);
     DBMS_OUTPUT.PUT_LINE('Apellidos: ' || v_apellidos);
     DBMS_OUTPUT.PUT_LINE('DNI: ' || v_dni);
     DBMS_OUTPUT.PUT_LINE('');
-  END LOOP;
-
-  -- Recorrer y mostrar insumos
-  DBMS_OUTPUT.PUT_LINE('Insumos:');
-  LOOP
+  END LOOP; 
+    DBMS_OUTPUT.PUT_LINE('Insumos:');
+  LOOP -- Recorrer y mostrar insumos
     FETCH cur_insumos INTO v_id_insumo, v_nombre_insumo, v_stock, v_unidad_medida;
     EXIT WHEN cur_insumos%NOTFOUND;
-
     -- Mostrar los datos del insumo
     DBMS_OUTPUT.PUT_LINE('ID: ' || v_id_insumo);
     DBMS_OUTPUT.PUT_LINE('Nombre: ' || v_nombre_insumo);
@@ -240,3 +282,5 @@ BEGIN
   CLOSE cur_insumos;
 END;
 /
+
+SELECT 'N¬∞ ' || LPAD(id_compra, 4, '0') AS id from compra
