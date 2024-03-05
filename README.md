@@ -35,10 +35,10 @@ git clone https://github.com/AngeloLaMadrid/TR9-Programacio-con-Oracle-SQL.git
 
 ## ✨ Importancia
 
-Este repositorio sirve como material de apoyo para el aprendizaje de programación PL/SQL y SQL en Oracle Database. Contiene ejemplos prácticos que permiten poner en práctica los conceptos de una manera sencilla. 
+Este repositorio sirve como material de apoyo para el aprendizaje de programación PL/SQL y el curso de `SQL en Oracle Database`, contiene ejemplos prácticos que permiten poner en práctica los conceptos de una manera sencilla. 
 
-El objetivo es proveer a estudiantes y desarrolladores ejemplos funcionales de consultas, procedimientos almacenados, funciones, triggers, entre otros objetos de base de datos. De esta manera se facilita el aprendizaje a través de casos prácticos.
+El objetivo de este reto es realizar ejemplos funcionales de consultas, procedimientos almacenados, funciones, triggers, entre otros objetos de base de datos, de esta manera se facilita el aprendizaje a través de casos prácticos.
 
 ## 📝 Licencia
-
-Este proyecto tiene licencia MIT. Consulte el archivo LICENSE para más detalles.
+[![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)
+Este proyecto tiene licencia MIT. 
